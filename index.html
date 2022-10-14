@@ -1,0 +1,35 @@
+<!-- nuestro index.html -->
+<html>
+
+<head>
+  <title>Ahorcados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body id="Main">
+  <div >
+    <h1>Juego de Ahorcado!</h1>
+    <p>Adivine las letras restantes para ganar</p>
+    <div id="contenedorOportunidades">
+      <!-- En este bloque mostramos las oportunidades -->
+      <p>
+        Oportunidades:
+      <p id="oportunidades"></p>
+      </p>
+      <div class="corazon">
+      </div>
+    </div>
+
+    <p id="quote"></p> <!-- En este bloque mostramos el texto de ejemplo -->
+    <p id="message"></p> <!-- En este bloque mostramos los mensajes del juego -->
+
+    <div id="contenedor">
+      <input type="text" aria-label="palabra actual" id="texto-tipeado" />
+      <!-- el componente textbox para ingresar el texto -->
+      <button type="button" id="inicio">Jugar</button> <!-- Botón para iniciar el juego -->
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
