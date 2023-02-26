@@ -24,18 +24,22 @@
         color: aqua;
         width: fit-content;
         margin: 0 auto;
-        font-size: large;
+        font-size: 20px;
 
+    }
+    .titulo{
+        font-size: 40px;
     }
 
     #inicio {
         color: rgb(248, 248, 248);
         border-radius: 30px;
         border: 2px solid #009292;
-        width: 90px;
-        height: 30px;
+        width: 150px;
+        height: 40px;
         background-color: #009292;
-
+        cursor: pointer;
+        font-size: 20px;
     }
 
     #texto-tipeado {

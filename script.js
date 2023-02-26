@@ -1,110 +1,92 @@
-// dentro del script.js
-// todas nuestros textos de ejemplo
-const textos = [
-  "Perro", "Salud", "Verano", "Bienvenido", "Ajedrez"
-];
-// almacena la lista de palabras y el índice de la palabra que el jugador está escribiendo actualmente
-let words = [];
-let wordIndex = 0;
-// la hora de inicio
-let startTime = Date.now();
-// elementos de la pagina
+const textos = ["Perro", "Salud", "Verano", "Bienvenido", "Ajedrez"];
 const textoElement = document.getElementById("quote");
 const messageElement = document.getElementById("message");
 const typedValueElement = document.getElementById("texto-tipeado");
 const oportunidadesElemento = document.getElementById("oportunidades");
 const oportunidadesContenedor = document.getElementById("contenedorOportunidades");
-/*
-*Recibe una palabra y oculta las letras a excepcion de la primera y la ultima
-*/
+let words = [], wordIndex = 0, startTime = 0;
+
 function ocultarLetras(frase) {
-  let palabraIncompleta = [];
-  for (let i = 0; i < frase.length; i++) {
-    //rellena los espacios de la palbra con "_"
-    palabraIncompleta[i] = "_";
-  }
-  //agrega las letras
+  const palabraIncompleta = new Array(frase.length).fill('_');
   palabraIncompleta[0] = frase.charAt(0);
   palabraIncompleta[palabraIncompleta.length - 1] = frase.charAt(frase.length - 1);
   return palabraIncompleta;
 }
 
-document.getElementById("inicio").addEventListener("click", () => {
-  // elegimos el texto de ejemplo a mostrar
+function mostrarPalabra(palabra) {
+  const spanPalabras = palabra.map(word => `<span>${ocultarLetras(word).join(' ')} </span>`);
+  textoElement.innerHTML = spanPalabras.join('');
+}
+
+function actualizarMensaje(mensaje) {
+  messageElement.innerText = mensaje;
+}
+
+function iniciarJuego() {
   const textoIndice = Math.floor(Math.random() * textos.length);
   const texto = textos[textoIndice];
-
+  words = texto.split(" ");
+  wordIndex = 0;
+  mostrarPalabra(words);
+  actualizarMensaje("");
+  typedValueElement.value = "";
   typedValueElement.style.display = "block";
   oportunidadesContenedor.style.display = "block";
   document.getElementById("inicio").style.display = "none";
-  // separamos el texto en un array de palabras
-  words = texto.split(" ");
-  // reestablemos el idice de palabras para el seguimiento
-  wordIndex = 0;
-  let palabraInconpleta = ocultarLetras(texto);
-  let palabraSinComa = palabraInconpleta.toString().replace(/,/g, ' ');
-  // Actualizamos la interfaz de usuario
-  // Creamos una matriz con los elementos span de nuestro HTML para poder definirles una class
-  const spanPalabras = words.map(function (word) {
-    return `<span>${palabraSinComa} </span>`;
-  });
-
-  // Convertimos a string y lo definimos como innerHTML en el texto de ejemplo a mostrar
-  textoElement.innerHTML = spanPalabras.join("");
-  // Resaltamos la primer palabra
-  // Borramos los mensajes previos
-  messageElement.innerText = "";
-
-  // Definimos el elemento textbox
-  // Vaciamos el elemento textbox
-  typedValueElement.value = "";
-  // Definimos el foco en el elemento
   typedValueElement.focus();
-  // Establecemos el manejador de eventos
-
-  // Iniciamos el contador de tiempo
   startTime = new Date().getTime();
-});
+}
 
-// al final de nuestro archivo script.js
-typedValueElement.addEventListener("input", () => {
-  // tomamos la palabra actual
-  const currentWord = words[wordIndex];
-  // tomamos el valor actual
-  const typedValue = typedValueElement.value;
-  // tiene 5 oportunidades mas que la cantidad de letras de la palabra
-  let oportunidades = currentWord.length + 4;
+function finalizarJuego(mensaje) {
+  actualizarMensaje(mensaje);
+  typedValueElement.style.display = "none";
+  document.getElementById("inicio").style.display = "block";
+}
+
+function actualizarOportunidades(oportunidades) {
   oportunidadesElemento.innerText = oportunidades;
-  for (let index = 0; index < typedValue.length; index++) {
-    if (typedValue.charAt(index) === currentWord.charAt(index) && wordIndex === words.length - 1) {
-      message = "Letra Correcta"
-      messageElement.innerText = message;
-      oportunidades--;
-      oportunidadesElemento.innerText = oportunidades;
-      if (typedValue === currentWord) {
-        message = "Felicidades! Ganaste"
-        messageElement.innerText = message;
-        typedValueElement.style.display = "none";
-        document.getElementById("inicio").style.display = "block";
-      } else if (typedValue !== currentWord && index === currentWord.length - 1) {
-        message = "Perdiste! Vuelve a intentarlo"
-        messageElement.innerText = message;
-        typedValueElement.style.display = "none";
-        document.getElementById("inicio").style.display = "block";
+}
+
+function procesarInput() {
+  const currentWord = words[wordIndex];
+  const typedValue = typedValueElement.value;
+  let oportunidades = currentWord.length + 4;
+  actualizarOportunidades(oportunidades);
+
+  const currentWordLetters = currentWord.split('');
+  const typedValueLetters = typedValue.split('');
+  const spanPalabras = ocultarLetras(currentWord).map(letra => `<span>${letra}</span>`);
+
+  for (let index = 1; index < typedValueLetters.length; index++) {
+    const typedLetter = typedValueLetters[index];
+    const currentLetter = currentWordLetters[index];
+
+    if (typedLetter === currentLetter) {
+      spanPalabras[index] = `<span>${currentLetter}</span>`;
+
+      if (index === currentWord.length - 1 && typedValueLetters.join('') === currentWord) {
+        finalizarJuego("Felicidades Ganaste");
+        return;
       }
+      if (index === currentWord.length - 1 && typedValueLetters.join('') != currentWord) {
+        finalizarJuego(`Perdiste! Vuelve a intentarlo, la palabra era : ${currentWord}`);
+        return;
+      }
+
     } else {
-      message = "Letra Incorrecta"
-      messageElement.innerText = message;
+      actualizarMensaje("Letra Incorrecta");
       oportunidades--;
-      oportunidadesElemento.innerText = oportunidades;
+      actualizarOportunidades(oportunidades);
+
       if (oportunidades === 0 || index === currentWord.length - 1) {
-        message = "Perdiste! Vuelve a intentarlo"
-        messageElement.innerText = message;
-        typedValueElement.style.display = "none";
-        document.getElementById("inicio").style.display = "block";
+        finalizarJuego(`Perdiste! Vuelve a intentarlo.La palabra era : ${currentWord}`);
+        return;
       }
     }
   }
-}
-);
 
+  textoElement.innerHTML = spanPalabras.join('');
+}
+
+document.getElementById("inicio").addEventListener("click", iniciarJuego);
+typedValueElement.addEventListener("input", procesarInput);
