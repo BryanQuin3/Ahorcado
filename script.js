@@ -84,14 +84,14 @@ function procesarInput() {
     const typedLetter = typedValueLetters[index];
     const currentLetter = currentWordLetters[index];
 
-    if (typedLetter === currentLetter) {
+    if (typedLetter.toLowerCase() === currentLetter.toLowerCase()) {
       spanPalabras[index] = `<span>${currentLetter}</span>`;
       actualizarOportunidades(oportunidades);
-      if (index === currentWord.length - 1 && typedValueLetters.join('') === currentWord) {
+      if (index === currentWord.length - 1 && typedValueLetters.join('').toLowerCase() === currentWord.toLowerCase()) {
         finalizarJuego("Felicidades Ganaste");
         return;
       }
-      if (index === currentWord.length - 1 && typedValueLetters.join('') != currentWord) {
+      if (index === currentWord.length - 1 && typedValueLetters.join('').toLowerCase() != currentWord.toLowerCase()) {
         finalizarJuego(`Perdiste! Vuelve a intentarlo. La palabra era : ${currentWord}`);
         return;
       }
