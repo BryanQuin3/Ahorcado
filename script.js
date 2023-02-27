@@ -4,7 +4,8 @@ const messageElement = document.getElementById("message");
 const typedValueElement = document.getElementById("texto-tipeado");
 const oportunidadesElemento = document.getElementById("oportunidades");
 const oportunidadesContenedor = document.getElementById("contenedorOportunidades");
-let words = [], wordIndex = 0, startTime = 0;
+let words = [], wordIndex = 0;
+let oportunidades = 4;
 
 function ocultarLetras(frase) {
   const palabraIncompleta = new Array(frase.length).fill('_');
@@ -28,19 +29,35 @@ function iniciarJuego() {
   words = texto.split(" ");
   wordIndex = 0;
   mostrarPalabra(words);
+  actualizarOportunidades(oportunidades);
   actualizarMensaje("");
   typedValueElement.value = "";
   typedValueElement.style.display = "block";
   oportunidadesContenedor.style.display = "block";
   document.getElementById("inicio").style.display = "none";
   typedValueElement.focus();
-  startTime = new Date().getTime();
 }
 
 function finalizarJuego(mensaje) {
   actualizarMensaje(mensaje);
   typedValueElement.style.display = "none";
   document.getElementById("inicio").style.display = "block";
+  oportunidades=4;
+}
+
+function countBackspaceKeyPresses(inputId) {
+  const input = document.getElementById(inputId);
+  let counter = 0;
+
+  input.addEventListener("keydown", function(event) {
+    if (event.key === "Backspace") {
+      counter++;
+    }
+  });
+
+  return function() {
+    return counter;
+  };
 }
 
 function actualizarOportunidades(oportunidades) {
@@ -50,26 +67,32 @@ function actualizarOportunidades(oportunidades) {
 function procesarInput() {
   const currentWord = words[wordIndex];
   const typedValue = typedValueElement.value;
-  let oportunidades = currentWord.length + 4;
   actualizarOportunidades(oportunidades);
 
   const currentWordLetters = currentWord.split('');
   const typedValueLetters = typedValue.split('');
-  const spanPalabras = ocultarLetras(currentWord).map(letra => `<span>${letra}</span>`);
-
+  const spanPalabras = ocultarLetras(currentWord).map(letra => `<span>${letra}</span>`);  
+  //verifica si se borró alguna letra
+  typedValueElement.addEventListener("input", ()=> {
+    const typedValue = typedValueElement.value;
+    if (typedValue.length < typedValueLetters.length) {
+      actualizarOportunidades(oportunidades);
+    }
+  });
+  
   for (let index = 1; index < typedValueLetters.length; index++) {
     const typedLetter = typedValueLetters[index];
     const currentLetter = currentWordLetters[index];
 
     if (typedLetter === currentLetter) {
       spanPalabras[index] = `<span>${currentLetter}</span>`;
-
+      actualizarOportunidades(oportunidades);
       if (index === currentWord.length - 1 && typedValueLetters.join('') === currentWord) {
         finalizarJuego("Felicidades Ganaste");
         return;
       }
       if (index === currentWord.length - 1 && typedValueLetters.join('') != currentWord) {
-        finalizarJuego(`Perdiste! Vuelve a intentarlo, la palabra era : ${currentWord}`);
+        finalizarJuego(`Perdiste! Vuelve a intentarlo. La palabra era : ${currentWord}`);
         return;
       }
 
@@ -77,7 +100,6 @@ function procesarInput() {
       actualizarMensaje("Letra Incorrecta");
       oportunidades--;
       actualizarOportunidades(oportunidades);
-
       if (oportunidades === 0 || index === currentWord.length - 1) {
         finalizarJuego(`Perdiste! Vuelve a intentarlo.La palabra era : ${currentWord}`);
         return;
