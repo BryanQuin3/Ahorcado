@@ -68,7 +68,7 @@ function procesarInput() {
   const currentWord = words[wordIndex];
   const typedValue = typedValueElement.value;
   actualizarOportunidades(oportunidades);
-
+  actualizarMensaje("");
   const currentWordLetters = currentWord.split('');
   const typedValueLetters = typedValue.split('');
   const spanPalabras = ocultarLetras(currentWord).map(letra => `<span>${letra}</span>`);  
